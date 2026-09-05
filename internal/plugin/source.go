@@ -71,7 +71,7 @@ func (service *guideService) searchSources(ctx context.Context, item character) 
 		})
 		if err != nil || !successfulResponse(result) {
 			reason := requestFailureReason(err, result)
-			service.log(ctx, "warn", fmt.Sprintf("米游社未能返回“%s”的攻略搜索结果，关键词为“%s攻略”；将继续尝试其他别名或缓存。原因：%s", item.Name, term, reason), map[string]any{"character": item.Name, "term": term, "status_code": intValue(result["status_code"]), "error": errorText(err)})
+			service.log(ctx, "debug", fmt.Sprintf("“%s”攻略搜索失败，尝试其他关键词或缓存：%s", item.Name, reason), map[string]any{"character": item.Name, "term": term, "status_code": intValue(result["status_code"]), "error": errorText(err)})
 			continue
 		}
 		document := responseDocument(result)
@@ -121,7 +121,7 @@ func (service *guideService) fetchPostImages(ctx context.Context, postID string)
 	})
 	if err != nil || !successfulResponse(result) {
 		reason := requestFailureReason(err, result)
-		service.log(ctx, "warn", fmt.Sprintf("米游社攻略帖子 %s 的详情读取失败；该帖图片将从本次结果中跳过。原因：%s", postID, reason), map[string]any{"post_id": postID, "status_code": intValue(result["status_code"]), "error": errorText(err)})
+		service.log(ctx, "warn", fmt.Sprintf("米游社攻略帖子 %s 读取失败，已跳过：%s", postID, reason), map[string]any{"post_id": postID, "status_code": intValue(result["status_code"]), "error": errorText(err)})
 		return nil
 	}
 	return imageURLsFromDetail(responseDocument(result))

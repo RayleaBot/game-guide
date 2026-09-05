@@ -71,11 +71,7 @@ func (service *guideService) send(ctx context.Context, event *rayleabot.EventCon
 		return event.SendText("请在攻略前写角色名，例如「*昔涟攻略」。")
 	}
 	service.sendFetchingNotice(ctx, event, item)
-	matchStatus := "未命中内置角色目录，将按输入继续查询"
-	if item.Matched {
-		matchStatus = "已命中内置角色目录"
-	}
-	service.log(ctx, "info", fmt.Sprintf("开始查询“%s”攻略图；请求“%s”%s，结果将发送到 %s %s。", item.Name, requested, matchStatus, event.Event.Target.Type, event.Event.Target.ID), map[string]any{
+	service.log(ctx, "debug", fmt.Sprintf("正在查询“%s”攻略", item.Name), map[string]any{
 		"query": requested, "character": item.Name, "matched_alias": item.Matched,
 		"target_type": event.Event.Target.Type, "target_id": event.Event.Target.ID,
 	})
@@ -88,14 +84,14 @@ func (service *guideService) send(ctx context.Context, event *rayleabot.EventCon
 			images, fromCache = legacyImages, true
 		}
 	} else {
-		service.log(ctx, "info", fmt.Sprintf("“%s”攻略命中本地缓存，共 %d 张图片；将直接发送缓存内容。", item.Name, len(images)), map[string]any{"character": item.Name, "images": len(images)})
+		service.log(ctx, "debug", fmt.Sprintf("使用“%s”攻略缓存，共 %d 张图片", item.Name, len(images)), map[string]any{"character": item.Name, "images": len(images)})
 	}
 	if len(images) == 0 {
-		service.log(ctx, "warn", fmt.Sprintf("没有找到“%s”的可发送攻略图；已检查本地缓存和米游社来源，本次仅返回文字提示。", item.Name), map[string]any{"character": item.Name})
+		service.log(ctx, "warn", fmt.Sprintf("未找到“%s”攻略图片。", item.Name), map[string]any{"character": item.Name})
 		return event.SendText("没有找到「" + item.Name + "」的星穹铁道攻略图。")
 	}
 	if err := service.sendImages(ctx, event, item, images, fromCache); err != nil {
-		service.log(ctx, "warn", fmt.Sprintf("“%s”的 %d 张攻略图发送到 %s %s 失败；本次攻略未送达，请稍后重试。原因：%s", item.Name, len(images), event.Event.Target.Type, event.Event.Target.ID, err.Error()), mergeFields(map[string]any{
+		service.log(ctx, "warn", fmt.Sprintf("“%s”攻略图片未全部确认送达：%s", item.Name, err.Error()), mergeFields(map[string]any{
 			"character": item.Name, "delivery_kind": "message.forward.send",
 			"target_type": event.Event.Target.Type, "target_id": event.Event.Target.ID,
 			"images": len(images), "from_cache": fromCache,
@@ -118,7 +114,7 @@ func (service *guideService) sendFetchingNotice(ctx context.Context, event *rayl
 		}},
 	})
 	if err != nil {
-		service.log(ctx, "warn", fmt.Sprintf("“%s”攻略的获取提示发送到 %s %s 失败；攻略查询仍会继续。原因：%s", item.Name, event.Event.Target.Type, event.Event.Target.ID, err.Error()), mergeFields(map[string]any{
+		service.log(ctx, "warn", fmt.Sprintf("“%s”查询提示发送失败，继续查询攻略：%s", item.Name, err.Error()), mergeFields(map[string]any{
 			"character": item.Name, "target_type": event.Event.Target.Type, "target_id": event.Event.Target.ID,
 		}, actionErrorFields(err)))
 	}
@@ -214,7 +210,7 @@ func (service *guideService) refreshCache(ctx context.Context, item character) [
 			cachedPath := service.imagePath(item, sourceIndex, source.PostID, imageIndex, candidate.URL)
 			encoded := base64.StdEncoding.EncodeToString(content)
 			if _, err := service.actions.FileWriteBase64(ctx, cachedPath, encoded); err != nil {
-				service.log(ctx, "warn", fmt.Sprintf("“%s”攻略图片写入缓存 %s 失败；该图片将从本次结果中跳过。原因：%s", item.Name, cachedPath, err.Error()), mergeFields(map[string]any{"character": item.Name, "path": cachedPath}, actionErrorFields(err)))
+				service.log(ctx, "warn", fmt.Sprintf("“%s”攻略图片保存失败，已跳过这张图片：%s", item.Name, err.Error()), mergeFields(map[string]any{"character": item.Name, "path": cachedPath}, actionErrorFields(err)))
 				continue
 			}
 			stored.Images = append(stored.Images, sourceImage{URL: candidate.URL, File: cachedPath})
@@ -234,7 +230,7 @@ func (service *guideService) refreshCache(ctx context.Context, item character) [
 		encoded, _ := json.MarshalIndent(record, "", "  ")
 		if _, err := service.actions.FileWriteText(ctx, service.indexPath(item), string(encoded)+"\n"); err != nil {
 			indexPath := service.indexPath(item)
-			service.log(ctx, "warn", fmt.Sprintf("“%s”攻略的缓存索引 %s 写入失败；图片仍可用于本次发送，但下次查询可能重新下载。原因：%s", item.Name, indexPath, err.Error()), mergeFields(map[string]any{"character": item.Name, "path": indexPath}, actionErrorFields(err)))
+			service.log(ctx, "warn", fmt.Sprintf("“%s”攻略缓存记录保存失败，下次可能重新下载：%s", item.Name, err.Error()), mergeFields(map[string]any{"character": item.Name, "path": indexPath}, actionErrorFields(err)))
 		}
 	}
 	return images
@@ -286,7 +282,7 @@ func (service *guideService) sendImages(ctx context.Context, event *rayleabot.Ev
 			return fmt.Errorf("send guide batch %d: %w", start/forwardImagesPerMessage+1, err)
 		}
 	}
-	service.log(ctx, "info", fmt.Sprintf("“%s”的 %d 张攻略图已通过 %d 个合并转发批次发送到 %s %s；内容来自%s。", item.Name, len(images), (len(images)+forwardImagesPerMessage-1)/forwardImagesPerMessage, event.Event.Target.Type, event.Event.Target.ID, map[bool]string{true: "本地缓存", false: "在线查询"}[fromCache]), map[string]any{
+	service.log(ctx, "info", fmt.Sprintf("“%s”攻略已发送，共 %d 张图片。", item.Name, len(images)), map[string]any{
 		"character": item.Name, "images": len(images),
 		"batches":    (len(images) + forwardImagesPerMessage - 1) / forwardImagesPerMessage,
 		"from_cache": fromCache, "target_type": event.Event.Target.Type, "target_id": event.Event.Target.ID,
