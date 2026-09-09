@@ -1,5 +1,6 @@
 {
   "id": "character-list",
+  "name": "角色目录",
   "version": "1",
   "entry_html": "template.html",
   "stylesheet": "styles.css",
