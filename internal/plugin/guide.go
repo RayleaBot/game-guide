@@ -25,7 +25,7 @@ const (
 )
 
 type guideActions interface {
-	HTTPRequest(context.Context, rayleabot.HTTPRequest) (rayleabot.ActionResult, error)
+	HTTPRequest(context.Context, httpRequest) (rayleabot.ActionResult, error)
 	FileRead(context.Context, string) (rayleabot.ActionResult, error)
 	FileWriteText(context.Context, string, string) (rayleabot.ActionResult, error)
 	FileWriteBase64(context.Context, string, string) (rayleabot.ActionResult, error)
@@ -241,7 +241,7 @@ func (service *guideService) downloadImage(ctx context.Context, imageURL string)
 	if err != nil || !supportedImageHost(parsed.Hostname()) {
 		return nil
 	}
-	result, err := service.actions.HTTPRequest(ctx, rayleabot.HTTPRequest{
+	result, err := service.actions.HTTPRequest(ctx, httpRequest{
 		Method: "GET", URL: imageURL, TimeoutSeconds: 30,
 		Headers: map[string]string{
 			"Accept":  "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",

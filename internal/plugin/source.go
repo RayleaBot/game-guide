@@ -66,7 +66,7 @@ func (service *guideService) searchSources(ctx context.Context, item character) 
 		params.Set("gids", strconv.Itoa(starRailGameID))
 		params.Set("keyword", term+"攻略")
 		params.Set("page_size", strconv.Itoa(max(service.maxSources*4, 8)))
-		result, err := service.actions.HTTPRequest(ctx, rayleabot.HTTPRequest{
+		result, err := service.actions.HTTPRequest(ctx, httpRequest{
 			Method: "GET", URL: searchEndpoint + "?" + params.Encode(), Headers: cloneHeaders(requestHeaders), TimeoutSeconds: 15,
 		})
 		if err != nil || !successfulResponse(result) {
@@ -116,7 +116,7 @@ func (service *guideService) fetchPostImages(ctx context.Context, postID string)
 		return nil
 	}
 	params := url.Values{"post_id": []string{postID}}
-	result, err := service.actions.HTTPRequest(ctx, rayleabot.HTTPRequest{
+	result, err := service.actions.HTTPRequest(ctx, httpRequest{
 		Method: "GET", URL: detailEndpoint + "?" + params.Encode(), Headers: cloneHeaders(requestHeaders), TimeoutSeconds: 15,
 	})
 	if err != nil || !successfulResponse(result) {

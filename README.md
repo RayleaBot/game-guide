@@ -103,7 +103,7 @@ plugin-game-guide/
   internal/plugin/                   角色检索、米游社拉取、缓存和发送
   internal/assets/characters.json    角色正式名、slug 与别名
   templates/character-list/          角色列表渲染模板
-  info.json                          manifest v3、权限与命令声明
+  info.json                          manifest v4 与命令声明
 ```
 
 ### 本地联调

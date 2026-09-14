@@ -153,7 +153,7 @@ type fakeGuideActions struct {
 	forward     []rayleabot.MessageForwardSendRequest
 }
 
-func (fake *fakeGuideActions) HTTPRequest(_ context.Context, request rayleabot.HTTPRequest) (rayleabot.ActionResult, error) {
+func (fake *fakeGuideActions) HTTPRequest(_ context.Context, request httpRequest) (rayleabot.ActionResult, error) {
 	fake.requestURLs = append(fake.requestURLs, request.URL)
 	if len(fake.http) == 0 {
 		return rayleabot.ActionResult{"status_code": 404}, nil

@@ -23,7 +23,7 @@ func handleEvent(ctx context.Context, event *rayleabot.EventContext) error {
 		return sendCharacterList(ctx, event)
 	}
 	matched := resolveCharacter(request.Query)
-	return newGuideService(event.Actions()).send(ctx, event, matched, request.Query)
+	return newGuideService(runtimeActions{Actions: event.Actions()}).send(ctx, event, matched, request.Query)
 }
 
 func sendCharacterList(ctx context.Context, event *rayleabot.EventContext) error {

@@ -1,10 +1,10 @@
 {
   "id": "raylea.game-guide",
   "name": "游戏攻略",
-  "version": "0.3.0",
-  "manifest_version": "3",
+  "version": "0.4.0",
+  "manifest_version": "4",
   "license": "MIT",
-  "min_core_version": "0.4.0",
+  "min_core_version": "0.7.0",
   "metadata": {
     "description": "查询《崩坏：星穹铁道》角色攻略图",
     "author": "raylea",
@@ -13,12 +13,6 @@
   },
   "concurrency": 3,
   "events": ["message.group", "message.private", "plugin.started", "bot.identity.changed"],
-  "permissions": {
-    "message.send": true,
-    "message.forward.send": true,
-    "http.request": true,
-    "render.image": true
-  },
   "commands": [
     {
       "id": "game-guide",
