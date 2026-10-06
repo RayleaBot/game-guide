@@ -16,8 +16,7 @@ permissions:
   contents: read
 
 env:
-  RAYLEABOT_SDK_REF: sdk/go/v0.7.0
-  GO_VERSION: 1.26.6
+  GO_VERSION: 1.27.1
   NODE_VERSION: 26.7.0
   PNPM_VERSION: 11.22.0
 
@@ -28,11 +27,16 @@ jobs:
       - name: Checkout plugin
         uses: actions/checkout@v7
 
+      - name: Read SDK commit
+        id: sdk
+        shell: bash
+        run: echo "ref=$(cat .rayleabot-sdk-ref)" >> "$GITHUB_OUTPUT"
+
       - name: Checkout pinned RayleaBot SDK
         uses: actions/checkout@v7
         with:
           repository: RayleaBot/RayleaBot
-          ref: ${{ env.RAYLEABOT_SDK_REF }}
+          ref: ${{ steps.sdk.outputs.ref }}
           path: .rayleabot/core
 
       - name: Setup Go
@@ -95,11 +99,16 @@ jobs:
       - name: Checkout plugin
         uses: actions/checkout@v7
 
+      - name: Read SDK commit
+        id: sdk
+        shell: bash
+        run: echo "ref=$(cat .rayleabot-sdk-ref)" >> "$GITHUB_OUTPUT"
+
       - name: Checkout pinned RayleaBot SDK
         uses: actions/checkout@v7
         with:
           repository: RayleaBot/RayleaBot
-          ref: ${{ env.RAYLEABOT_SDK_REF }}
+          ref: ${{ steps.sdk.outputs.ref }}
           path: .rayleabot/core
 
       - name: Setup Go
