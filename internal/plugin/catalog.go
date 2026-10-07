@@ -10,7 +10,7 @@ import (
 	"unicode"
 
 	rayleabot "github.com/RayleaBot/RayleaBot/sdk/go"
-	"github.com/RayleaBot/plugin-game-guide/internal/assets"
+	"github.com/RayleaBot/game-guide/internal/assets"
 )
 
 type character struct {

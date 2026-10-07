@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/RayleaBot/plugin-game-guide/internal/plugin"
+	"github.com/RayleaBot/game-guide/internal/plugin"
 )
 
 func main() {

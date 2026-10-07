@@ -8,7 +8,7 @@
   "metadata": {
     "description": "查询《崩坏：星穹铁道》角色攻略图",
     "author": "raylea",
-    "repo": "https://github.com/RayleaBot/plugin-game-guide",
+    "repo": "https://github.com/RayleaBot/game-guide",
     "keywords": ["guide", "render", "honkai-star-rail"]
   },
   "concurrency": 3,

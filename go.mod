@@ -1,4 +1,4 @@
-module github.com/RayleaBot/plugin-game-guide
+module github.com/RayleaBot/game-guide
 
 go 1.27.1
 

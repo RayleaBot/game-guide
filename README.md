@@ -31,7 +31,7 @@ RayleaBot 官方插件 · `raylea.game-guide`
 
 ### 本地安装包
 
-也可以在插件列表中安装本仓库 [GitHub Release](https://github.com/RayleaBot/plugin-game-guide/releases) 里对应平台的 ZIP：
+也可以在插件列表中安装本仓库 [GitHub Release](https://github.com/RayleaBot/game-guide/releases) 里对应平台的 ZIP：
 
 | 平台 | 资源 |
 | --- | --- |
@@ -98,7 +98,7 @@ RayleaBot 官方插件 · `raylea.game-guide`
 ### 目录结构
 
 ```text
-plugin-game-guide/
+game-guide/
   cmd/game-guide/                    进程入口
   internal/plugin/                   角色检索、米游社拉取、缓存和发送
   internal/assets/characters.json    角色正式名、slug 与别名
@@ -115,7 +115,7 @@ plugin-game-guide/
   "workspace_version": "2",
   "plugins": [
     {
-      "path": "../RayleaBotPlugins/plugin-game-guide"
+      "path": "../RayleaBotPlugins/game-guide"
     }
   ]
 }
